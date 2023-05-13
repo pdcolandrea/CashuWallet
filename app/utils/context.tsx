@@ -16,7 +16,7 @@ interface CContext {
 }
 
 // const w = new Cashi()
-export const MINT_URL = "https://8333.space:3338"
+export const MINT_URL = "https://legend.lnbits.com/cashu/api/v1/4gr9Xcmz3XEkUNwiBiQGoC"
 const wallet = new CashuWallet(new CashuMint(MINT_URL))
 
 export const CashiContext = createContext<CContext>(null)
@@ -82,6 +82,7 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
 
   // fund db using ECash string
   const depositECash = async (cashu: string) => {
+    console.log("depositing ecash")
     const { token } = await wallet.receive(cashu)
     console.log(JSON.stringify(token))
 
