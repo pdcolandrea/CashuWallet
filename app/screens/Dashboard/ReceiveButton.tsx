@@ -4,9 +4,10 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 
 interface ReceiveButtonProps {
   sat?: number
+  onPress: () => void
 }
 
-export const ReceiveButton = ({ sat }: ReceiveButtonProps) => {
+export const ReceiveButton = ({ sat, onPress }: ReceiveButtonProps) => {
   const isValid = Number.isInteger(sat)
   let text = "Token Not Valid"
   if (isValid) {
@@ -16,6 +17,7 @@ export const ReceiveButton = ({ sat }: ReceiveButtonProps) => {
   return (
     <Button
       preset="filled"
+      onPress={onPress}
       text={isValid ? `Receive ${sat}sat` : `Token Not Valid`}
       disabled={!isValid}
     >

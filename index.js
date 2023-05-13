@@ -6,8 +6,10 @@ import App from "./app/app.tsx"
 import React from "react"
 import { AppRegistry } from "react-native"
 import RNBootSplash from "react-native-bootsplash"
+import "react-native-get-random-values"
 
 function IgniteApp() {
+  console.log({ crypto })
   return <App hideSplashScreen={RNBootSplash.hide} />
 }
 

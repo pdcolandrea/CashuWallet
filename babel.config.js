@@ -16,6 +16,16 @@ const plugins = [
       ],
     },
   ],
+  [
+    "module-resolver",
+    {
+      alias: {
+        crypto: "react-native-quick-crypto",
+        stream: "stream-browserify",
+        buffer: "@craftzdog/react-native-buffer",
+      },
+    },
+  ],
   /** react-native-reanimated web support @see https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation/#web */
   "@babel/plugin-proposal-export-namespace-from",
   /** NOTE: This must be last in the plugins @see https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation/#babel-plugin */

@@ -28,7 +28,9 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
   }, [])
 
   useEffect(() => {
+    console.log("init storage")
     const proofs = storage.getProofs()
+    console.log({ proofs })
     setW({ balance: calculateBalance(proofs) })
   }, [])
 

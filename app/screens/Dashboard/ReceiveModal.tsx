@@ -2,15 +2,17 @@
 import { BottomSheetModal, BottomSheetTextInput } from "@gorhom/bottom-sheet"
 import { ListItem, Text } from "app/components"
 import { colors, spacing, typography } from "app/theme"
-import React, { forwardRef, useCallback, useMemo, useState } from "react"
+import React, { forwardRef, useCallback, useContext, useMemo, useState } from "react"
 import { Keyboard, TextStyle, TouchableOpacity, View } from "react-native"
 import { Icon } from "react-native-elements"
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 import { ReceiveButton } from "./ReceiveButton"
 import { getDecodedToken } from "@cashu/cashu-ts"
 import Clipboard from "@react-native-clipboard/clipboard"
+import { CashiContext } from "app/utils/context"
 
 const ReceiveECash = ({ expand, input, setInput }) => {
+  const { deposit } = useContext(CashiContext)
   let sats: number
 
   try {
@@ -82,7 +84,12 @@ const ReceiveECash = ({ expand, input, setInput }) => {
 
         <View style={{ flex: 1 }} />
 
-        <ReceiveButton sat={sats} />
+        <ReceiveButton
+          sat={sats}
+          onPress={async () => {
+            await deposit.ecash(input)
+          }}
+        />
       </Animated.View>
     </TouchableOpacity>
   )
