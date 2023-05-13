@@ -9,6 +9,7 @@ import { DemoCommunityScreen, DemoShowroomScreen, DemoDebugScreen } from "../scr
 import { DemoPodcastListScreen } from "../screens/DemoPodcastListScreen"
 import { colors, spacing, typography } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
+import { DashboardNavigator } from "./DashboardNavigator"
 
 export type DemoTabParamList = {
   DemoCommunity: undefined
@@ -28,7 +29,6 @@ export type DemoTabScreenProps<T extends keyof DemoTabParamList> = CompositeScre
 >
 
 const Tab = createBottomTabNavigator<DemoTabParamList>()
-
 export function DemoNavigator() {
   const { bottom } = useSafeAreaInsets()
 
@@ -57,7 +57,7 @@ export function DemoNavigator() {
 
       <Tab.Screen
         name="DemoCommunity"
-        component={DemoCommunityScreen}
+        component={DashboardNavigator}
         options={{
           tabBarLabel: translate("demoNavigator.communityTab"),
           tabBarIcon: ({ focused }) => (
