@@ -153,17 +153,19 @@ Follow our [Maestro Setup](https://ignitecookbook.com/docs/recipes/MaestroSetup)
 
 # ECASH
 
-- Receive ECash: (cashu: string) => CASHU_ADD_BALANCE
+- [RECEIVE] ECash: (cashu: string) => CASHU_ADD_BALANCE
   -- Camera
   -- Paste
   -- TextInput
 
-- Send ECash: (amount: number) => CASHU_TO_SHARE
+- [SEND/WITHDRAW] ECash: (amount: number) => CHECK_IF_TOKEN_SPENT_IN_BACKGROUND
   -- TextInput
+  -->--> if token is paid => DELETE_PROOF_FROM_DB, ADD_TOKEN_TO_HISTORY
 
 # LIGHTNING
 
 - [RECEIVE] Generate LN invoice: (amount: number) => CHECK_FOR_INVOICE_IN_BACKGROUND => SHARE_INVOICE
+  ** minting **
   -- TextInput
   -->--> if invoice is paid => CASHU_ADD_BALANCE
 

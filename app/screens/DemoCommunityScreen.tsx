@@ -1,5 +1,5 @@
 import React, { FC, useContext, useRef, useState } from "react"
-import { ImageStyle, TextStyle, View, ViewStyle } from "react-native"
+import { ImageStyle, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { Button, Screen, Text } from "../components"
 import { DemoTabScreenProps } from "../navigators/DemoNavigator"
 import { spacing } from "../theme"
@@ -7,13 +7,24 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet"
 import { ReceiveModal } from "./Dashboard/ReceiveModal"
 import { CashiContext } from "app/utils/context"
 import { SendModal } from "./Dashboard/SendModal"
+import Animated, { FadeIn, FadeInRight, FadeOutRight } from "react-native-reanimated"
+import { AText } from "app/components/AnimatedText"
 
 export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
   function DemoCommunityScreen(_props) {
     const { wallet } = useContext(CashiContext)
+    const [viewingCurr, setViewingCurr] = useState<"Lightning Network" | "Cashu Token">(
+      "Lightning Network",
+    )
     const [viewingModal, setViewingModal] = useState<"receive" | "withdraw" | "">("")
     const receiveModal = useRef<BottomSheetModal>(null)
     const sendModal = useRef<BottomSheetModal>(null)
+
+    const switchCurrMethods = () =>
+      setViewingCurr((val) => {
+        if (val === "Cashu Token") return "Lightning Network"
+        return "Cashu Token"
+      })
 
     const onReceivePressed = () => {
       setViewingModal("receive")
@@ -31,9 +42,10 @@ export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
           <Text preset="heading" style={$title}>
             {wallet.balance} Sats
           </Text>
-          <Text preset="subheading" style={{ textAlign: "center" }}>
-            Lightning Network
-          </Text>
+
+          <AText onPress={switchCurrMethods} preset="subheading" style={{ textAlign: "center" }}>
+            {viewingCurr}
+          </AText>
 
           <View style={$buttonCon}>
             <Button
@@ -50,6 +62,9 @@ export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
               onPress={onSendPressed}
             />
           </View>
+          <TouchableOpacity onPress={switchCurrMethods}>
+            <Text>D</Text>
+          </TouchableOpacity>
         </Screen>
 
         <SendModal

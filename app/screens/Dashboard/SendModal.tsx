@@ -177,13 +177,15 @@ export const SendModal = forwardRef<BottomSheetModal, SendModalProps>((props, re
             </TouchableOpacity>
             <Text preset="subheading">Method</Text>
             <ListItem
-              text="Generate ECash Invoice"
               leftIcon="ladybug"
               rightIcon="caretRight"
               disabled={!isInputValid}
               topSeparator
               onPress={onEcashPressed}
-            />
+            >
+              <Text preset="bold">Generate ECash Invoice</Text>
+            </ListItem>
+
             <ListItem
               text="Pay Lightning Invoice"
               leftIcon="ladybug"
