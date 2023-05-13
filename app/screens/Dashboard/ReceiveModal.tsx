@@ -11,7 +11,23 @@ import { getDecodedToken } from "@cashu/cashu-ts"
 import Clipboard from "@react-native-clipboard/clipboard"
 import { CashiContext } from "app/utils/context"
 
-const ReceiveECash = ({ expand, input, setInput }) => {
+interface ReceiveModalProps {
+  onChange: (index: number) => void
+}
+
+export const ReceiveModal = forwardRef<BottomSheetModal, ReceiveModalProps>((props, ref) => {
+  const [input, setInput] = useState("")
+  const snapPoints = useMemo(() => ["70%"], [])
+
+  const openModal = () => {
+    console.log({ ref })
+    ref.current?.expand()
+  }
+
+  const onModalChange = useCallback((index: number) => {
+    props.onChange(index)
+  }, [])
+
   const { deposit } = useContext(CashiContext)
   let sats: number
 
@@ -31,105 +47,6 @@ const ReceiveECash = ({ expand, input, setInput }) => {
     }
   }
 
-  const onCameraPressed = () => {
-    console.log("camera: todo ")
-  }
-
-  return (
-    <TouchableOpacity
-      style={{ flex: 1, padding: spacing.medium }}
-      onPress={() => {
-        Keyboard.dismiss()
-        expand()
-      }}
-      activeOpacity={1}
-    >
-      <Animated.View entering={FadeIn.delay(300)} style={{ flex: 1, marginBottom: 20 }}>
-        <Text preset="subheading">Input Token</Text>
-        <BottomSheetTextInput
-          style={$inputStyle}
-          onChangeText={(text) => setInput(text)}
-          autoCorrect={false}
-          autoCapitalize="none"
-          autoComplete="off"
-          autoFocus
-          placeholder="cashu....."
-          multiline
-        />
-
-        <View
-          style={{ flexDirection: "row", marginTop: spacing.small, justifyContent: "flex-end" }}
-        >
-          <Icon
-            name="clipboard"
-            type="feather"
-            onPress={onPastePressed}
-            containerStyle={{ backgroundColor: colors.background, borderRadius: 120 }}
-            iconStyle={{ padding: 10 }}
-            color={colors.text}
-          />
-          <Icon
-            name="camera"
-            type="feather"
-            onPress={() => {}}
-            containerStyle={{
-              backgroundColor: colors.background,
-              borderRadius: 120,
-              marginLeft: spacing.small,
-            }}
-            iconStyle={{ padding: 10 }}
-            color={colors.text}
-          />
-        </View>
-
-        <View style={{ flex: 1 }} />
-
-        <ReceiveButton
-          sat={sats}
-          onPress={async () => {
-            await deposit.ecash(input)
-          }}
-        />
-      </Animated.View>
-    </TouchableOpacity>
-  )
-}
-
-const ReceiveLightning = () => {}
-
-interface ReceiveModalProps {
-  onChange: (index: number) => void
-}
-
-export const ReceiveModal = forwardRef<BottomSheetModal, ReceiveModalProps>((props, ref) => {
-  const [input, setInput] = useState("")
-  const [currentStep, setCurrentStep] = useState(0)
-  const snapPoints = useMemo(() => ["25%", "50%"], [])
-  const fadeOutDuration = 500
-
-  const openModal = () => {
-    ref.current?.expand()
-  }
-
-  const onEcashPressed = () => {
-    // trigger jank layout animation
-    setCurrentStep(-1)
-
-    setTimeout(() => {
-      ref.current.expand()
-      setCurrentStep(1)
-    }, fadeOutDuration)
-  }
-  const onLightningPressed = () => {}
-
-  const onModalChange = useCallback((index: number) => {
-    props.onChange(index)
-
-    if (index === -1) {
-      setCurrentStep(0)
-    }
-  }, [])
-
   return (
     <BottomSheetModal
       ref={ref}
@@ -138,21 +55,75 @@ export const ReceiveModal = forwardRef<BottomSheetModal, ReceiveModalProps>((pro
       keyboardBehavior="interactive"
       // enablePanDownToClose={currentStep === 0}
     >
-      {currentStep === 0 && (
-        <Animated.View exiting={FadeOut} style={{ padding: spacing.medium }}>
-          <Text preset="subheading">Method</Text>
-          <ListItem
-            text="Fund using ECash"
-            leftIcon="ladybug"
-            rightIcon="caretRight"
-            topSeparator
-            onPress={onEcashPressed}
-          />
-          <ListItem text="Fund using Lightning Network" leftIcon="ladybug" rightIcon="caretRight" />
-        </Animated.View>
-      )}
+      <TouchableOpacity
+        style={{ flex: 1, padding: spacing.medium }}
+        onPress={() => {
+          Keyboard.dismiss()
+          expand()
+        }}
+        activeOpacity={1}
+      >
+        <Animated.View entering={FadeIn.delay(300)} style={{ flex: 1, marginBottom: 20 }}>
+          <Text preset="subheading" size="xl">
+            Input Token or Invoice
+          </Text>
+          <Text preset="formLabel">
+            Enter in your cashu token
+            <Text preset="default">
+              {" {"}cashux1jk...{"} "}
+            </Text>
+            or lightning invoice
+            <Text preset="default">
+              {" {"}ln1jsdi...{"} "}
+            </Text>
+          </Text>
 
-      {currentStep === 1 && <ReceiveECash expand={openModal} setInput={setInput} input={input} />}
+          <BottomSheetTextInput
+            style={$inputStyle}
+            onChangeText={(text) => setInput(text)}
+            autoCorrect={false}
+            autoCapitalize="none"
+            autoComplete="off"
+            autoFocus
+            placeholder="cashu....."
+            multiline
+          />
+
+          <View
+            style={{ flexDirection: "row", marginTop: spacing.small, justifyContent: "flex-end" }}
+          >
+            <Icon
+              name="clipboard"
+              type="feather"
+              onPress={onPastePressed}
+              containerStyle={{ backgroundColor: colors.background, borderRadius: 120 }}
+              iconStyle={{ padding: 10 }}
+              color={colors.text}
+            />
+            <Icon
+              name="camera"
+              type="feather"
+              onPress={() => {}}
+              containerStyle={{
+                backgroundColor: colors.background,
+                borderRadius: 120,
+                marginLeft: spacing.small,
+              }}
+              iconStyle={{ padding: 10 }}
+              color={colors.text}
+            />
+          </View>
+
+          <View style={{ flex: 1 }} />
+
+          <ReceiveButton
+            sat={sats}
+            onPress={async () => {
+              await deposit.ecash(input)
+            }}
+          />
+        </Animated.View>
+      </TouchableOpacity>
     </BottomSheetModal>
   )
 })
@@ -170,4 +141,5 @@ const $inputStyle: TextStyle = {
   // https://github.com/facebook/react-native/issues/21720#issuecomment-532642093
   paddingVertical: 6,
   paddingHorizontal: 6,
+  marginTop: spacing.small,
 }

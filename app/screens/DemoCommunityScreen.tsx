@@ -6,16 +6,23 @@ import { spacing } from "../theme"
 import { BottomSheetModal } from "@gorhom/bottom-sheet"
 import { ReceiveModal } from "./Dashboard/ReceiveModal"
 import { CashiContext } from "app/utils/context"
+import { SendModal } from "./Dashboard/SendModal"
 
 export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
   function DemoCommunityScreen(_props) {
     const { wallet } = useContext(CashiContext)
     const [viewingModal, setViewingModal] = useState<"receive" | "withdraw" | "">("")
     const receiveModal = useRef<BottomSheetModal>(null)
+    const sendModal = useRef<BottomSheetModal>(null)
 
     const onReceivePressed = () => {
       setViewingModal("receive")
       receiveModal.current.present()
+    }
+
+    const onSendPressed = () => {
+      setViewingModal("withdraw")
+      sendModal.current.present()
     }
 
     return (
@@ -25,7 +32,7 @@ export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
             {wallet.balance} Sats
           </Text>
           <Text preset="subheading" style={{ textAlign: "center" }}>
-            https://8333.space
+            Lightning Network
           </Text>
 
           <View style={$buttonCon}>
@@ -37,14 +44,25 @@ export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
             />
             <Button
               text="Withdraw"
+              preset={viewingModal === "withdraw" ? "reversed" : "default"}
               style={{ marginLeft: spacing.large }}
               textStyle={{ paddingHorizontal: 20 }}
+              onPress={onSendPressed}
             />
           </View>
         </Screen>
 
-        <ReceiveModal
+        <SendModal
           ref={receiveModal}
+          onChange={(index) => {
+            if (index === -1) {
+              setViewingModal("")
+            }
+          }}
+        />
+
+        <ReceiveModal
+          ref={sendModal}
           onChange={(index) => {
             if (index === -1) {
               setViewingModal("")

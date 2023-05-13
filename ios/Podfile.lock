@@ -467,6 +467,8 @@ PODS:
     - React-Core
   - RNGestureHandler (2.9.0):
     - React-Core
+  - RNOS (1.2.6):
+    - React
   - RNReanimated (2.14.4):
     - DoubleConversion
     - FBLazyVector
@@ -581,6 +583,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNOS (from `../node_modules/react-native-os`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -712,6 +715,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-clipboard/clipboard"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNOS:
+    :path: "../node_modules/react-native-os"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -788,6 +793,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
   RNCClipboard: 3f0451a8100393908bea5c5c5b16f96d45f30bfc
   RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
+  RNOS: 6f2f9a70895bbbfbdad7196abd952e7b01d45027
   RNReanimated: cc5e3aa479cb9170bcccf8204291a6950a3be128
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608

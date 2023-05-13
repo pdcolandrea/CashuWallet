@@ -16,7 +16,7 @@ import { ReceiveModal } from "app/screens/Dashboard/ReceiveModal"
 const Dashboard = createNativeStackNavigator<DashboardScreenParamList>()
 export function DashboardNavigator() {
   return (
-    <Dashboard.Navigator screenOptions={{ headerShown: false }}>
+    <Dashboard.Navigator screenOptions={{ headerShown: true }}>
       <Dashboard.Screen name="DemoCommunityScreen" component={DemoCommunityScreen} />
     </Dashboard.Navigator>
   )

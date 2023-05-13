@@ -37,7 +37,7 @@ export interface TextProps extends RNTextProps {
   /**
    * Text size modifier.
    */
-  size?: Sizes
+  size?: Sizes | "xxxl"
   /**
    * Children components.
    */
@@ -73,6 +73,7 @@ export function Text(props: TextProps) {
 }
 
 const $sizeStyles = {
+  xxxl: { fontSize: 44, lineHeight: 55 } as TextStyle,
   xxl: { fontSize: 36, lineHeight: 44 } as TextStyle,
   xl: { fontSize: 24, lineHeight: 34 } as TextStyle,
   lg: { fontSize: 20, lineHeight: 32 } as TextStyle,

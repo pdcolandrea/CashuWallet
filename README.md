@@ -128,3 +128,46 @@ Follow our [Maestro Setup](https://ignitecookbook.com/docs/recipes/MaestroSetup)
 - [2017 aka Andross](https://github.com/infinitered/ignite-andross)
 - [2016 aka Ignite 1.0](https://github.com/infinitered/ignite-ir-boilerplate-2016)
 
+# Fund Wallet (Receive)
+
+- Generate LN invoice: (amount: number) => CHECK_FOR_INVOICE_IN_BACKGROUND
+  -- TextInput
+  -->--> if invoice is paid => CASHU_ADD_BALANCE
+
+- Receive ECash: (cashu: string) => CASHU_ADD_BALANCE
+  -- Camera
+  -- Paste
+  -- TextInput
+
+# Send Funds from Wallet (Withdraw)
+
+- Pay LN invoice: (invoice, LNURL: string) => CASHU_SUB_BALANCE
+  -- Camera
+  -- Paste
+  -- TextInput
+
+- Pay ECash: (amount: number) => CASHU_TO_SHARE
+  -- TextInput
+
+#### OR
+
+# ECASH
+
+- Receive ECash: (cashu: string) => CASHU_ADD_BALANCE
+  -- Camera
+  -- Paste
+  -- TextInput
+
+- Send ECash: (amount: number) => CASHU_TO_SHARE
+  -- TextInput
+
+# LIGHTNING
+
+- [RECEIVE] Generate LN invoice: (amount: number) => CHECK_FOR_INVOICE_IN_BACKGROUND => SHARE_INVOICE
+  -- TextInput
+  -->--> if invoice is paid => CASHU_ADD_BALANCE
+
+- [SEND/WITHDRAW] Pay LN invoice: (invoice, LNURL: string) => CASHU_SUB_BALANCE
+  -- Camera
+  -- Paste
+  -- TextInput
