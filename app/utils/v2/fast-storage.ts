@@ -1,5 +1,5 @@
 import { MMKV } from "react-native-mmkv"
-import { CProof, Token } from "../cashi"
+import { CProof, CToken } from "../cashi"
 
 const store = new MMKV()
 
@@ -43,16 +43,16 @@ export const insertProof = (proof: CProof) => {
 // token
 //
 
-export const getTokenHistory = (): Token[] => {
+export const getTokenHistory = (): CToken[] => {
   const p = store.getString("TOKENS_HIS")
   if (p) {
-    return JSON.parse(p) as Token[]
+    return JSON.parse(p) as CToken[]
   }
 
   return []
 }
 
-const setTokenHistory = (token: Token[]) => {
+const setTokenHistory = (token: CToken[]) => {
   if (typeof token !== "object") {
     console.log({ token })
     throw new Error("unable to setToken")
@@ -62,9 +62,11 @@ const setTokenHistory = (token: Token[]) => {
   return store.set("TOKENS_HIS", json)
 }
 
-export const insertTokenHistory = (token: Token) => {
+export const insertTokenHistory = (token: CToken) => {
   const allTokens = getTokenHistory()
   const newTokens = allTokens.concat(token)
 
   return setTokenHistory(newTokens)
 }
+
+export const _deleteAllStorage = () => store.clearAll()

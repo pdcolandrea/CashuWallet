@@ -1,10 +1,12 @@
-import { CashuMint, CashuWallet, Token, getDecodedToken } from "@cashu/cashu-ts"
+import { CashuMint, CashuWallet, Token, getDecodedToken, getEncodedToken } from "@cashu/cashu-ts"
 import * as storage from "../utils/v2/fast-storage"
 import React, { createContext, useEffect, useState } from "react"
 import { calculateBalance } from "app/lib/wallet-util"
+import { CToken } from "./cashi"
 
 interface WalletData {
   balance: number
+  history: CToken[]
 }
 
 interface CContext {
@@ -12,6 +14,9 @@ interface CContext {
   refreshWallet: () => void
   deposit: {
     ecash: (cashu: string) => Promise<Token>
+  }
+  send: {
+    ecash: (amount: number) => Promise<string>
   }
 }
 
@@ -21,7 +26,7 @@ const wallet = new CashuWallet(new CashuMint(MINT_URL))
 
 export const CashiContext = createContext<CContext>(null)
 export const CashiProvider = ({ children }: { children: JSX.Element }) => {
-  const [w, setW] = useState({ balance: 0 })
+  const [w, setW] = useState({ balance: 0, history: [] })
 
   useEffect(() => {
     // every 1min recalc balance using proof
@@ -30,8 +35,10 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
   useEffect(() => {
     console.log("init storage")
     const proofs = storage.getProofs()
-    console.log({ proofs })
-    setW({ balance: calculateBalance(proofs) })
+    const tokens = storage.getTokenHistory()
+    console.log(tokens.length)
+    // console.log({ proofs })
+    setW({ balance: calculateBalance(proofs), history: tokens })
   }, [])
 
   const refreshWallet = async () => {
@@ -90,10 +97,11 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
       throw new Error("Missing token elements")
     }
 
-    // could try this instead of receive
-    const t = getDecodedToken(cashu)
-    console.log("not using t:")
-    console.log(JSON.stringify(t))
+    // TODO: THINK THIS SHOULD ALSO INSEET INTO TOKEN_HIS
+    // const decodedToken = getDecodedToken(cashu)
+    // for (const t of decodedToken.token[0].proofs) {
+    //   storage.insertTokenHistory({})
+    // }
 
     for (const p of token.token[0].proofs) {
       storage.insertProof({
@@ -115,6 +123,52 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
     return token
   }
 
+  // send funds using ECash string
+  const withdrawECash = async (amount: number) => {
+    const proofs = storage.getProofs()
+    const { returnChange, send } = await wallet.send(amount, proofs)
+
+    console.log(JSON.stringify(returnChange))
+    console.log(JSON.stringify(send))
+
+    const encoded = getEncodedToken({
+      token: [
+        {
+          mint: MINT_URL,
+          proofs: send,
+        },
+      ],
+    })
+
+    console.log({ encoded })
+
+    // TODO: THINK I HAVE TO STORE PROOFS (RETURN CHANGE?)
+
+    storage.insertTokenHistory({
+      amount: amount * -1,
+      status: "pending",
+      token: encoded,
+      mint: MINT_URL,
+      date: +new Date(),
+    })
+
+    // let retries = 20;
+    // const timer = setInterval(async () => {
+    //   console.log(`Searching for hash: ${lnInvoice.hash}. ${retries} retries`);
+    //   const encoded = await this.checkInvoiceHasBeenPaid(
+    //     amount,
+    //     lnInvoice.hash
+    //   );
+    //   if (encoded || retries === 0) {
+    //     clearInterval(timer);
+    //   }
+    //   retries -= 1;
+    // }, 5000);
+
+    return encoded
+    // start rescanProofs
+  }
+
   return (
     <CashiContext.Provider
       value={{
@@ -122,6 +176,9 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
         refreshWallet,
         deposit: {
           ecash: depositECash,
+        },
+        send: {
+          ecash: withdrawECash,
         },
       }}
     >

@@ -6,7 +6,7 @@ interface CProof extends Proof {
   status?: Status
 }
 
-interface Token {
+interface CToken {
   amount: number
   status: Status
   date: number

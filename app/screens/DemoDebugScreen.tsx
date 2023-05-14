@@ -6,6 +6,7 @@ import { DemoTabScreenProps } from "../navigators/DemoNavigator"
 import { colors, spacing } from "../theme"
 import { isRTL } from "../i18n"
 import { useStores } from "../models"
+import { _deleteAllStorage } from "app/utils/v2/fast-storage"
 
 function openLinkInBrowser(url: string) {
   Linking.canOpenURL(url).then((canOpen) => canOpen && Linking.openURL(url))
@@ -20,22 +21,7 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
 
   const usingHermes = typeof HermesInternal === "object" && HermesInternal !== null
 
-  const demoReactotron = React.useMemo(
-    () => async () => {
-      console.tron.display({
-        name: "DISPLAY",
-        value: {
-          appId: Application.applicationId,
-          appName: Application.applicationName,
-          appVersion: Application.nativeApplicationVersion,
-          appBuildVersion: Application.nativeBuildVersion,
-          hermesEnabled: usingHermes,
-        },
-        important: true,
-      })
-    },
-    [],
-  )
+  const onDeleteWalletPressed = () => _deleteAllStorage()
 
   return (
     <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={$container}>
@@ -88,8 +74,8 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
         />
       </View>
       <View style={$buttonContainer}>
-        <Button style={$button} tx="demoDebugScreen.reactotron" onPress={demoReactotron} />
-        <Text style={$hint} tx={`demoDebugScreen.${Platform.OS}ReactotronHint` as const} />
+        <Button style={$button} onPress={onDeleteWalletPressed} text="DELETE WALLET DATA" />
+        <Text style={$hint}>This will remove all stored proofs & token history on the device</Text>
       </View>
       <View style={$buttonContainer}>
         <Button style={$button} tx="common.logOut" onPress={logout} />
