@@ -140,23 +140,23 @@ export default class Cashi {
   }
 
   // util
-  //   generateLNInvoice = async (amount: number) => {
-  //     const { pr, hash } = await wallet.requestMint(amount)
-  //     console.log(`[requestMint] Pay this invoice for ${amount} sat: `, {
-  //       pr,
-  //       hash,
-  //     })
-  //     // showInvoiceQR(pr)
+  generateLNInvoice = async (amount: number) => {
+    const { pr, hash } = await wallet.requestMint(amount)
+    console.log(`[requestMint] Pay this invoice for ${amount} sat: `, {
+      pr,
+      hash,
+    })
+    // showInvoiceQR(pr)
 
-  //     await storage.insertLNInvoice({
-  //       amount,
-  //       hash,
-  //       pr,
-  //       status: "pending",
-  //     })
+    storage.insertINInvoice({
+      amount,
+      hash,
+      pr,
+      status: "pending",
+    })
 
-  //     return { pr, hash }
-  //   }
+    return { pr, hash }
+  }
 
   /**
    *
@@ -164,32 +164,32 @@ export default class Cashi {
    * @param hash
    * @ ECASH that can be spent
    */
-  //   checkInvoiceHasBeenPaid = async (amount: number, hash: string) => {
-  //     try {
-  //       // if we pass here - invoice was paid
-  //       const { proofs, newKeys } = await wallet.requestTokens(amount, hash)
-  //       await storage.updateLNInvoice(hash, { status: "paid" })
+  checkInvoiceHasBeenPaid = async (amount: number, hash: string) => {
+    try {
+      // if we pass here - invoice was paid
+      const { proofs, newKeys } = await wallet.requestTokens(amount, hash)
+      await storage.updateLNInvoice(hash, { status: "paid" })
 
-  //       for (const p of proofs) {
-  //         await storage.insertProof({
-  //           amount: amount,
-  //           C: p.C,
-  //           id: p.id,
-  //           secret: p.secret,
-  //         })
-  //       }
+      for (const p of proofs) {
+        await storage.insertProof({
+          amount: amount,
+          C: p.C,
+          id: p.id,
+          secret: p.secret,
+        })
+      }
 
-  //       console.log(JSON.stringify(newKeys))
+      console.log(JSON.stringify(newKeys))
 
-  //       const encoded = getEncodedToken({
-  //         token: [{ mint: MINT_URL, proofs: proofs }],
-  //       })
-  //       console.log({ encoded })
-  //       await storage.insertToken({ amount, status: "paid", token: encoded })
-  //       return encoded
-  //     } catch (err) {
-  //       console.log("Waiting on LN invoice to be paid")
-  //       // console.error(err);
-  //     }
-  //   }
+      const encoded = getEncodedToken({
+        token: [{ mint: MINT_URL, proofs: proofs }],
+      })
+      console.log({ encoded })
+      await storage.insertToken({ amount, status: "paid", token: encoded })
+      return encoded
+    } catch (err) {
+      console.log("Waiting on LN invoice to be paid")
+      // console.error(err);
+    }
+  }
 }

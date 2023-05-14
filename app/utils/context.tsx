@@ -11,9 +11,12 @@ interface WalletData {
 
 interface CContext {
   wallet: WalletData
+  loading: boolean
   refreshWallet: () => void
   deposit: {
     ecash: (cashu: string) => Promise<Token>
+    generateLNInvoice: (amount: number) => Promise<{ pr: string; hash: string }>
+    ln: (amount: number, hash: string) => Promise<string>
   }
   send: {
     ecash: (amount: number) => Promise<string>
@@ -26,30 +29,68 @@ const wallet = new CashuWallet(new CashuMint(MINT_URL))
 
 export const CashiContext = createContext<CContext>(null)
 export const CashiProvider = ({ children }: { children: JSX.Element }) => {
+  const [loading, setLoading] = useState(false)
   const [w, setW] = useState({ balance: 0, history: [] })
 
   useEffect(() => {
     // every 1min recalc balance using proof
+
+    setInterval(() => {
+      rescanInvoices()
+    }, 30000)
   }, [])
 
   useEffect(() => {
     console.log("init storage")
     const proofs = storage.getProofs()
     const tokens = storage.getTokenHistory()
-    console.log(tokens.length)
-    // console.log({ proofs })
-    setW({ balance: calculateBalance(proofs), history: tokens })
+    console.log({ tokens })
+    console.log({ proofs })
+    setW({ balance: calculateBalance(tokens), history: tokens })
   }, [])
 
   const refreshWallet = async () => {
-    await rescanInvoices()
+    console.warn("todo: refresh wallet")
+  }
+
+  const checkInvoiceHasBeenPaid = async (amount: number, hash: string) => {
+    try {
+      // if we pass here - invoice was paid
+      const { proofs, newKeys } = await wallet.requestTokens(amount, hash)
+      storage.updateLNInvoice(hash, { status: "paid" })
+
+      for (const p of proofs) {
+        await storage.insertProof({
+          amount: amount,
+          C: p.C,
+          id: p.id,
+          secret: p.secret,
+        })
+      }
+
+      console.log(JSON.stringify(newKeys))
+
+      const encoded = getEncodedToken({
+        token: [{ mint: MINT_URL, proofs: proofs }],
+      })
+      console.log({ encoded })
+      await storage.insertToken({ amount, status: "paid", token: encoded })
+      return encoded
+    } catch (err) {
+      console.log("Waiting on LN invoice to be paid")
+      // console.error(err);
+    }
   }
 
   const rescanInvoices = async () => {
-    setTimeout(() => {
-      setW({ balance: 5 })
-      console.log("setting bal")
-    }, 5000)
+    const invoices = storage.getLNInvoices().filter((i) => i.status === "pending")
+    console.log(`[rescanInv] Searching for invoices:`)
+    for (const invoice of invoices) {
+      console.log(`[rescanInv] ${invoice.hash}`)
+      // check if older than 3 days
+      // if (invoice.date)
+      await checkInvoiceHasBeenPaid(invoice.amount, invoice.hash)
+    }
   }
 
   const rescanProofs = async () => {
@@ -62,6 +103,17 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
       console.log(`FOUND PROOF P TO DELETE: ${p.id}`)
       storage.deleteSingleProof(p.id)
     }
+  }
+
+  const rescanTokenHistory = () => {
+    const tokens = storage.getTokenHistory()
+    const balance = calculateBalance(tokens)
+    setW((wal) => {
+      return {
+        ...wal,
+        balance,
+      }
+    })
   }
 
   // fund db using LN
@@ -120,6 +172,8 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
       })
     }
 
+    rescanTokenHistory()
+
     return token
   }
 
@@ -169,13 +223,36 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
     // start rescanProofs
   }
 
+  const generateLNInvoice = async (amount: number) => {
+    const { pr, hash } = await wallet.requestMint(amount)
+    console.log(`[requestMint] Pay this invoice for ${amount} sat: `, {
+      pr,
+      hash,
+    })
+
+    storage.insertINInvoice({
+      amount,
+      hash,
+      pr,
+      status: "pending",
+      date: +new Date(),
+    })
+
+    // search for hash
+
+    return { pr, hash }
+  }
+
   return (
     <CashiContext.Provider
       value={{
         wallet: w,
+        loading,
         refreshWallet,
         deposit: {
           ecash: depositECash,
+          generateLNInvoice,
+          ln: checkInvoiceHasBeenPaid,
         },
         send: {
           ecash: withdrawECash,

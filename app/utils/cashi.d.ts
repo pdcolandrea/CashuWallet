@@ -13,3 +13,11 @@ interface CToken {
   token: string
   mint: string
 }
+
+interface CInvoice {
+  amount: number
+  hash: string
+  pr: string
+  status: Status
+  date: number
+}

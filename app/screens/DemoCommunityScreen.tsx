@@ -11,8 +11,9 @@ import { InputSatModal } from "./Dashboard/InputSatModal"
 import { InputTextModal } from "./Dashboard/InputTextModal"
 import dayjs from "dayjs"
 import { Icon } from "react-native-elements"
-import Animated, { FadeInLeft } from "react-native-reanimated"
+import Animated, { FadeIn, FadeInLeft, FadeOut } from "react-native-reanimated"
 import { Image } from "react-native"
+import { CIcon } from "app/components/v2/CIcon"
 
 export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
   function DemoCommunityScreen(_props) {
@@ -51,6 +52,9 @@ export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
     return (
       <>
         <Screen preset="scroll" contentContainerStyle={$container} safeAreaEdges={["top"]}>
+          <Text style={{ color: colors.tint, alignSelf: "flex-end", marginBottom: 10 }}>
+            15sat Pending
+          </Text>
           <Text preset="heading" style={$title}>
             {wallet.balance} Sats
           </Text>
@@ -69,10 +73,29 @@ export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
               onPress={onReceivePressed}
             />
 
-            <Image
-              source={require("../../assets/images/cashu.png")}
-              style={{ height: 40, width: 40, borderRadius: 120 }}
-            />
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={switchCurrMethods}
+              style={{ padding: 6, backgroundColor: colors.palette.neutral300, borderRadius: 300 }}
+            >
+              {viewingCurr === "Lightning Network" ? (
+                <Animated.Image
+                  key={Math.random()}
+                  entering={FadeIn}
+                  exiting={FadeOut}
+                  source={require("../../assets/images/ln.png")}
+                  style={{ height: 50, width: 50, borderRadius: 120 }}
+                />
+              ) : (
+                <Animated.Image
+                  key={Math.random()}
+                  entering={FadeIn}
+                  exiting={FadeOut}
+                  source={require("../../assets/images/cashu.png")}
+                  style={{ height: 50, width: 50, borderRadius: 120 }}
+                />
+              )}
+            </TouchableOpacity>
             <Button
               text="Send"
               preset={viewingModal === "withdraw" ? "reversed" : "default"}
@@ -82,6 +105,13 @@ export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
           </View>
 
           <View style={{ flex: 1 }}>
+            <Text
+              preset="heading"
+              style={{ marginTop: spacing.medium, marginBottom: spacing.small }}
+            >
+              History
+            </Text>
+
             {wallet.history.map((tx, index) => {
               return (
                 <Animated.View
@@ -89,35 +119,28 @@ export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
                   entering={FadeInLeft.delay(1000 * index)}
                   style={{ flexDirection: "row", alignItems: "center", width: "100%" }}
                 >
-                  <Icon name="lightning-bolt-circle" type="material-community" size={35} />
+                  <CIcon />
                   <View
                     style={{
-                      backgroundColor: colors.palette.neutral100,
-                      marginLeft: spacing.medium,
-                      borderRadius: spacing.medium,
-                      padding: spacing.extraSmall,
                       flex: 1,
-                      borderWidth: 1,
-                      shadowColor: colors.palette.neutral800,
-                      borderColor: colors.palette.neutral300,
-                      shadowOffset: { width: 0, height: 12 },
-                      shadowOpacity: 0.08,
-                      shadowRadius: 12.81,
-                      elevation: 16,
+                      marginLeft: spacing.small,
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                     }}
                   >
-                    <Text>{`Received ${tx.amount} sats`}</Text>
-                    <Text>{`${dayjs(tx.date).format("M/DD/YY")}`}</Text>
+                    <View style={{ flexDirection: "column" }}>
+                      <Text preset="bold">{`Received ${tx.amount} cashu`}</Text>
+                      <Text>{`{...${tx.token.slice(-5)}} : ${dayjs(tx.date).format(
+                        "M/DD/YY",
+                      )}`}</Text>
+                    </View>
+
+                    <View>
+                      <Text preset="bold">+1</Text>
+                    </View>
                   </View>
                 </Animated.View>
-              )
-
-              return (
-                <Card
-                  heading={`Received ${tx.amount} sat`}
-                  content={`${dayjs(tx.date).format("M/DD/YY")}`}
-                  key={tx.token.toString()}
-                />
               )
             })}
           </View>

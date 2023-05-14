@@ -32,14 +32,29 @@ interface SendInvoiceProps {
   expand: () => void
   goLastStep: () => void
   sat: string
+  txType: "ln" | "ecash"
 }
 
-const SendInvoice = ({ expand, sat, goLastStep }: SendInvoiceProps) => {
+const SendInvoice = ({ expand, sat, goLastStep, txType }: SendInvoiceProps) => {
   const [token, setToken] = useState("")
-  const { send } = useContext(CashiContext)
+  const { send, deposit } = useContext(CashiContext)
+
+  useEffect(() => {
+    startSendProcess()
+  }, [])
 
   const startSendProcess = async () => {
-    const tx = await send.ecash(parseInt(sat))
+    const amount = parseInt(sat)
+
+    let tx = ""
+    if (txType === "ecash") {
+      tx = await send.ecash(amount)
+    } else {
+      const { pr } = await deposit.generateLNInvoice(amount)
+      tx = pr
+    }
+    console.log({ tx })
+
     if (tx) {
       setToken(tx)
     } else {
@@ -50,11 +65,9 @@ const SendInvoice = ({ expand, sat, goLastStep }: SendInvoiceProps) => {
 
   const copyTokenToClipboard = () => Clipboard.setString(token)
 
-  const onSharePressed = () => {}
-
-  useEffect(() => {
-    startSendProcess()
-  }, [])
+  const onSharePressed = () => {
+    console.warn("todo: share")
+  }
 
   return (
     <TouchableOpacity
@@ -116,9 +129,8 @@ interface SendModalProps {
   option: string
 }
 
-const sendOptions = ["Generate Lightning Invoice", "Generate Cashu Invoice"]
-
 export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props, ref) => {
+  const sendOptions = ["Generate Lightning Invoice", "Generate Cashu Invoice"]
   const { wallet } = useContext(CashiContext)
   const [input, setInput] = useState("")
   const [currentStep, setCurrentStep] = useState(0)
@@ -127,7 +139,7 @@ export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props
 
   const parsedInput = parseInt(input)
   const isInputValid = parsedInput && parsedInput > 0
-  const hasEnoughBalance = parsedInput && parsedInput >= wallet.balance
+  const hasEnoughBalance = parsedInput && parsedInput <= wallet.balance
 
   useEffect(() => {
     if (props.option !== "Lightning Network") {
@@ -147,18 +159,19 @@ export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props
     }
   }, [])
 
-  const handleFundingMethodPressed = (continueWithFunding: boolean) => {
-    if (!continueWithFunding) {
-      ref.current.close()
-    } else {
-      // trigger jank layout animation
-      setCurrentStep(-1)
-
-      setTimeout(() => {
-        openModal()
-        setCurrentStep(1)
-      }, 500)
+  const handleFundingMethodPressed = () => {
+    if (!hasEnoughBalance) {
+      // show error
+      return
     }
+
+    // trigger jank layout animation
+    setCurrentStep(-1)
+
+    setTimeout(() => {
+      openModal()
+      setCurrentStep(1)
+    }, 500)
   }
 
   return (
@@ -200,20 +213,36 @@ export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props
                 keyboardType="number-pad"
                 ref={inputRef}
                 style={{ display: "none" }}
-                onChangeText={(text) => setInput(text)}
+                value={input}
+                onChangeText={(text) => {
+                  if (parseInt(text) || (text.length === 0 && input.length === 1)) {
+                    setInput(text)
+                  }
+                }}
               />
             </TouchableOpacity>
             <Text preset="subheading">Method</Text>
+
             {sendOptions.map((opt, index) => {
               const isSelected = opt.includes(props.option.split(" ")[0])
               return (
                 <ListItem
                   leftIcon="ladybug"
                   key={opt}
-                  rightIcon={isSelected && !hasEnoughBalance ? "x" : "caretRight"}
+                  rightIcon={
+                    isSelected && props.option === "Cashu Token" && !hasEnoughBalance
+                      ? "x"
+                      : "caretRight"
+                  }
                   disabled={!isInputValid}
                   topSeparator={index === 0}
-                  onPress={() => handleFundingMethodPressed(isSelected)}
+                  onPress={() => {
+                    if (index === 0) {
+                      handleFundingMethodPressed()
+                    } else {
+                      ref.current.close()
+                    }
+                  }}
                 >
                   <Text preset={isSelected ? "bold" : "default"}>{opt}</Text>
                 </ListItem>
@@ -230,6 +259,7 @@ export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props
           goLastStep={() => {
             setCurrentStep((step) => (step -= 1))
           }}
+          txType={props.option === "Cashu Token" ? "ecash" : "ln"}
         />
       )}
     </BottomSheetModal>

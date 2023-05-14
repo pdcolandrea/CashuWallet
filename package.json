@@ -89,6 +89,7 @@
     "react-native-screens": "~3.20.0",
     "react-native-share": "^8.2.2",
     "react-native-svg": "^13.9.0",
+    "react-native-toast-message": "^2.1.6",
     "reactotron-mst": "3.1.4",
     "reactotron-react-js": "^3.3.7",
     "reactotron-react-native": "5.0.3",
