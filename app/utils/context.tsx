@@ -2,11 +2,11 @@ import { CashuMint, CashuWallet, Token, getDecodedToken, getEncodedToken } from 
 import * as storage from "../utils/v2/fast-storage"
 import React, { createContext, useEffect, useState } from "react"
 import { calculateBalance } from "app/lib/wallet-util"
-import { CToken } from "./cashi"
+import { CInvoice, CToken } from "./cashi"
 
 interface WalletData {
   balance: number
-  history: CToken[]
+  history: CToken[] | CInvoice[]
 }
 
 interface CContext {
@@ -37,16 +37,23 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
 
     setInterval(() => {
       rescanInvoices()
-    }, 30000)
+    }, 60000)
   }, [])
 
   useEffect(() => {
     console.log("init storage")
     const proofs = storage.getProofs()
     const tokens = storage.getTokenHistory()
+    const invoices = storage.getLNInvoices()
     console.log({ tokens })
     console.log({ proofs })
-    setW({ balance: calculateBalance(tokens), history: tokens })
+    console.log({ invoices })
+    setW({
+      balance: calculateBalance(tokens),
+      history: [...tokens, ...invoices].sort((token, invoice) => {
+        return invoice.date - token.date
+      }),
+    })
   }, [])
 
   const refreshWallet = async () => {

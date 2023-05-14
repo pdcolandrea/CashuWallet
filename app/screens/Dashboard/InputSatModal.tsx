@@ -27,6 +27,7 @@ import QRCode from "react-native-qrcode-svg"
 import { CashiContext } from "app/utils/context"
 import Clipboard from "@react-native-clipboard/clipboard"
 import { Icon } from "react-native-elements"
+import { ShareTextModal } from "./ShareText"
 
 interface SendInvoiceProps {
   expand: () => void
@@ -63,64 +64,13 @@ const SendInvoice = ({ expand, sat, goLastStep, txType }: SendInvoiceProps) => {
     }
   }
 
-  const copyTokenToClipboard = () => Clipboard.setString(token)
-
-  const onSharePressed = () => {
-    console.warn("todo: share")
-  }
-
   return (
-    <TouchableOpacity
-      style={{ flex: 1, padding: spacing.medium, paddingTop: spacing.extraLarge }}
-      onPress={() => {
-        Keyboard.dismiss()
+    <ShareTextModal
+      data={token}
+      onBackgroundPress={() => {
         expand()
       }}
-      activeOpacity={1}
-    >
-      <Animated.View entering={FadeIn.delay(300)} style={{ flex: 1, marginBottom: 20 }}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Text preset="heading">Send</Text>
-          <Icon
-            name="share"
-            type="font-awesome-5"
-            onPress={onSharePressed}
-            containerStyle={{
-              backgroundColor: colors.background,
-              borderRadius: 120,
-              padding: 6,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            size={18}
-            color={colors.text}
-          />
-        </View>
-        <Card
-          heading="Cashu Token"
-          onPress={copyTokenToClipboard}
-          content={token ? "token" : "..."}
-          footer="Only share this token with users you'd like to pay"
-        />
-        <Card
-          heading="Cashu Token"
-          onPress={copyTokenToClipboard}
-          ContentComponent={token ? <QRCode value={token} size={150} /> : <ActivityIndicator />}
-          style={{ marginTop: spacing.large }}
-          footer="Only share this token with users you'd like to pay"
-        />
-
-        <View style={{ flex: 1 }} />
-
-        <Button preset="filled" text="Done" />
-      </Animated.View>
-    </TouchableOpacity>
+    />
   )
 }
 
@@ -137,6 +87,7 @@ export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props
   const inputRef = useRef<TextInput>()
   const snapPoints = useMemo(() => ["35%", "100%"], [])
 
+  const isCashu = props.option === "Cashu Token"
   const parsedInput = parseInt(input)
   const isInputValid = parsedInput && parsedInput > 0
   const hasEnoughBalance = parsedInput && parsedInput <= wallet.balance
@@ -160,8 +111,9 @@ export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props
   }, [])
 
   const handleFundingMethodPressed = () => {
-    if (!hasEnoughBalance) {
+    if (isCashu && !hasEnoughBalance) {
       // show error
+      console.warn("not enough balance")
       return
     }
 
