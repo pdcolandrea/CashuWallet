@@ -3,16 +3,22 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { DemoCommunityScreen } from "app/screens"
 
 import { TransactionItemScreen } from "app/screens/Dashboard/TxItemScreen"
+import { CompositeScreenProps } from "@react-navigation/native"
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
+import { AppStackParamList, AppStackScreenProps } from "."
 
-// export type DashboardScreenParamList = {
-//   DemoCommunityScreen: undefined
-//   ReceiveModal: undefined
-// }
+export type DashboardScreenParamList = {
+  DemoCommunityScreen: undefined
+  TransactionItem: {
+    data: string
+  }
+}
 
-//   export type DemoTabScreenProps<T extends keyof DemoTabParamList> = CompositeScreenProps<
-//     BottomTabScreenProps<DemoTabParamList, T>,
-//     AppStackScreenProps<keyof AppStackParamList>
-//   >
+export type DashboardTabScreenProps<T extends keyof DashboardScreenParamList> =
+  CompositeScreenProps<
+    BottomTabScreenProps<DashboardScreenParamList, T>,
+    AppStackScreenProps<keyof AppStackParamList>
+  >
 
 const Dashboard = createNativeStackNavigator<DashboardScreenParamList>()
 export function DashboardNavigator() {

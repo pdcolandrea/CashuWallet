@@ -8,7 +8,7 @@ import {
   View,
   ViewStyle,
 } from "react-native"
-import { Button, Card, ListItem, Screen, Text } from "../components"
+import { Button, Screen, Text } from "../components"
 import { DemoTabScreenProps } from "../navigators/DemoNavigator"
 import { colors, spacing } from "../theme"
 import { BottomSheetModal } from "@gorhom/bottom-sheet"
@@ -47,7 +47,7 @@ export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
     const sendModal = useRef<BottomSheetModal>(null)
     const animation = useSharedValue(0)
     const animatedStyles = useAnimatedStyle(() => {
-      const opacity = interpolate(animation.value, [0, 1], [0.6, 0], Extrapolate.CLAMP)
+      const opacity = interpolate(animation.value, [0, 0.5, 1], [0.6, 0.2, 0], Extrapolate.CLAMP)
       return {
         opacity,
         transform: [{ scale: animation.value }],
@@ -120,13 +120,18 @@ export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
               // style={{ padding: 6, backgroundColor: colors.palette.neutral300, borderRadius: 300 }}
             >
               {viewingCurr === "Lightning Network" ? (
-                <Animated.Image
-                  key={Math.random()}
-                  entering={FadeIn}
-                  exiting={FadeOut}
-                  source={require("../../assets/images/ln.png")}
-                  style={{ height: 50, width: 50, borderRadius: 120 }}
-                />
+                <>
+                  <Animated.Image
+                    key={Math.random()}
+                    entering={FadeIn}
+                    exiting={FadeOut}
+                    source={require("../../assets/images/ln.png")}
+                    style={{ height: 50, width: 50, borderRadius: 120 }}
+                  />
+                  <View style={$absolute}>
+                    <Animated.View style={[$purpleCircle, animatedStyles]} />
+                  </View>
+                </>
               ) : (
                 <>
                   <Animated.Image
@@ -185,8 +190,11 @@ export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
                 return (
                   <Pressable
                     onPress={() => {
-                      navigation.navigate("TransactionItem", {
-                        data: item.token || item.pr,
+                      _props.navigation.navigate("DemoCommunity", {
+                        screen: "TransactionItem",
+                        params: {
+                          data: item.token || item.pr,
+                        },
                       })
                     }}
                   >

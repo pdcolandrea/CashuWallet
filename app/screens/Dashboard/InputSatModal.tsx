@@ -85,7 +85,7 @@ export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props
   const [input, setInput] = useState("")
   const [currentStep, setCurrentStep] = useState(0)
   const inputRef = useRef<TextInput>()
-  const snapPoints = useMemo(() => ["35%", "100%"], [])
+  const snapPoints = useMemo(() => (currentStep === 0 ? ["35%"] : ["100%"]), [currentStep])
 
   const isCashu = props.option === "Cashu Token"
   const parsedInput = parseInt(input)
