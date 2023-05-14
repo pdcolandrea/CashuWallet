@@ -46,18 +46,25 @@ export const ShareTextModal = (props: ShareTextModalProps) => {
           />
         </View>
         <Card
-          heading="Cashu Token"
-          onPress={copyTokenToClipboard}
-          content={props.data || "..."}
-          footer="Only share this token with users you'd like to pay"
-        />
-        <Card
-          heading="Cashu Token"
           onPress={copyTokenToClipboard}
           ContentComponent={
-            props.data ? <QRCode value={props.data} size={150} /> : <ActivityIndicator />
+            props.data ? (
+              <View style={{ padding: 2 }}>
+                <QRCode value={props.data} size={170} />
+              </View>
+            ) : (
+              <ActivityIndicator />
+            )
           }
-          style={{ marginTop: spacing.large }}
+          style={{ marginBottom: spacing.small }}
+        />
+        <Text preset="subheading">or</Text>
+
+        <Card
+          heading="Click Here to Copy"
+          onPress={copyTokenToClipboard}
+          style={{ marginTop: spacing.small }}
+          // content={props.data.slice(-5)}
           footer="Only share this token with users you'd like to pay"
         />
 
@@ -73,5 +80,6 @@ const $headerRow: ViewStyle = {
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "space-between",
+  marginBottom: spacing.medium,
 }
-const $root: ViewStyle = { flex: 1, padding: spacing.medium, paddingTop: spacing.extraLarge }
+const $root: ViewStyle = { flex: 1, padding: spacing.medium, marginTop: spacing.massive }
