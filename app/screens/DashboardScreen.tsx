@@ -1,5 +1,13 @@
 import React, { FC, useContext, useEffect, useRef, useState } from "react"
-import { FlatList, Pressable, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
+import {
+  FlatList,
+  ImageStyle,
+  Pressable,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native"
 import { Button, Screen, Text } from "../components"
 import { DemoTabScreenProps } from "../navigators/DemoNavigator"
 import { colors, spacing } from "../theme"
@@ -30,6 +38,7 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DemoCommunity">> = function
   const { wallet } = useContext(CashiContext)
   const [viewingCurr, setViewingCurr] = useState<"Lightning Network" | "Cashu Token">("Cashu Token")
   const [viewingModal, setViewingModal] = useState<"receive" | "withdraw" | "">("")
+  const debugCount = useRef(0)
   const receiveModal = useRef<BottomSheetModal>(null)
   const sendModal = useRef<BottomSheetModal>(null)
   const animation = useSharedValue(0)
@@ -80,7 +89,17 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DemoCommunity">> = function
   return (
     <>
       <Screen contentContainerStyle={$container} safeAreaEdges={["top"]}>
-        <Text style={{ color: colors.tint, alignSelf: "flex-end", marginBottom: 10 }}>
+        <Text
+          onPress={() => {
+            // debug for testing
+            if (debugCount.current >= 5) {
+              _props.navigation.navigate("DemoDebug")
+            } else {
+              debugCount.current += 1
+            }
+          }}
+          style={$smallText}
+        >
           15sat Pending
         </Text>
         <Text preset="heading" style={$title}>
@@ -95,17 +114,11 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DemoCommunity">> = function
           <Button
             preset={viewingModal === "receive" ? "reversed" : "default"}
             text="Receive"
-            style={{
-              width: "35%",
-            }}
+            style={$button}
             onPress={onReceivePressed}
           />
 
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={switchCurrMethods}
-            // style={{ padding: 6, backgroundColor: colors.palette.neutral300, borderRadius: 300 }}
-          >
+          <TouchableOpacity activeOpacity={1} onPress={switchCurrMethods}>
             {viewingCurr === "Lightning Network" ? (
               <>
                 <Animated.Image
@@ -113,7 +126,7 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DemoCommunity">> = function
                   entering={FadeIn}
                   exiting={FadeOut}
                   source={require("../../assets/images/ln.png")}
-                  style={{ height: 50, width: 50, borderRadius: 120, zIndex: 1 }}
+                  style={$headerImg}
                 />
                 <View style={$absolute}>
                   <Animated.View style={[$purpleCircle, animatedStyles]} />
@@ -126,7 +139,7 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DemoCommunity">> = function
                   entering={FadeIn}
                   exiting={FadeOut}
                   source={require("../../assets/images/cashu.png")}
-                  style={{ height: 50, width: 50, borderRadius: 120, zIndex: 1 }}
+                  style={$headerImg}
                 />
                 <View style={$absolute}>
                   <Animated.View style={[$purpleCircle, animatedStyles]} />
@@ -134,15 +147,16 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DemoCommunity">> = function
               </>
             )}
           </TouchableOpacity>
+
           <Button
             text="Send"
             preset={viewingModal === "withdraw" ? "reversed" : "default"}
-            style={{ width: "35%" }}
+            style={$button}
             onPress={onSendPressed}
           />
         </View>
 
-        <View style={{ flex: 1 }}>
+        <View style={$flex}>
           <Text preset="heading" style={{ marginTop: spacing.medium, marginBottom: spacing.small }}>
             History
           </Text>
@@ -244,6 +258,7 @@ const $absolute: ViewStyle = {
   justifyContent: "center",
   alignItems: "center",
 }
+const $button: ViewStyle = { width: "35%" }
 const $centeredRow: ViewStyle = { flexDirection: "row", alignItems: "center", width: "100%" }
 const $container: ViewStyle = {
   paddingTop: spacing.large + spacing.extraLarge,
@@ -257,6 +272,8 @@ const $buttonCon: ViewStyle = {
   justifyContent: "space-between",
   alignItems: "center",
 }
+const $headerImg: ImageStyle = { height: 50, width: 50, borderRadius: 120, zIndex: 1 }
+const $flex: ViewStyle = { flex: 1 }
 const $title: TextStyle = {
   marginBottom: spacing.extraSmall,
   textAlign: "center",
@@ -276,3 +293,4 @@ const $purpleCircle: ViewStyle = {
   borderWidth: 4,
   backgroundColor: "#825aca",
 }
+const $smallText: TextStyle = { color: colors.tint, alignSelf: "flex-end", marginBottom: 10 }

@@ -7,7 +7,7 @@ import React, { forwardRef, useCallback, useContext, useMemo, useRef, useState }
 import { Keyboard, TextInput, TextStyle, TouchableOpacity, View } from "react-native"
 import { Icon } from "react-native-elements"
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
-import { ReceiveButton } from "./ReceiveButton"
+import { ReceiveButton } from "../../components/ReceiveButton"
 import { getDecodedToken } from "@cashu/cashu-ts"
 import Clipboard from "@react-native-clipboard/clipboard"
 import { CashiContext } from "app/utils/context"

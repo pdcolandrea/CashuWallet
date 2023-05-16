@@ -15,9 +15,9 @@ import React, {
   useState,
 } from "react"
 import { Keyboard, TextInput, TextStyle, TouchableOpacity, View } from "react-native"
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
+import Animated, { FadeOut } from "react-native-reanimated"
 import { CashiContext } from "app/utils/context"
-import { Icon } from "react-native-elements"
+
 import { ShareTextModal } from "../../components/ShareText"
 
 interface SendInvoiceProps {
@@ -96,7 +96,7 @@ export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props
     ref.current?.expand()
   }
 
-  const onModalChange = useCallback((index: number, openOpposite?: boolean) => {
+  const onModalChange = useCallback((index: number) => {
     props.onChange(index)
 
     if (index === -1) {

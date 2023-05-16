@@ -5,10 +5,11 @@ import { TransactionItemScreen } from "app/screens/Dashboard/TxItemScreen"
 import { CompositeScreenProps } from "@react-navigation/native"
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { AppStackParamList, AppStackScreenProps } from "."
-import { DashboardScreen } from "app/screens"
+import { DashboardScreen, DemoDebugScreen } from "app/screens"
 
 export type DashboardScreenParamList = {
   DemoCommunityScreen: undefined
+  DemoDebug: undefined
   TransactionItem: {
     data: string
   }
@@ -26,6 +27,7 @@ export function DashboardNavigator() {
     <Dashboard.Navigator screenOptions={{ headerShown: false }}>
       <Dashboard.Screen name="DemoCommunityScreen" component={DashboardScreen} />
       <Dashboard.Screen name="TransactionItem" component={TransactionItemScreen} />
+      <Dashboard.Screen name="DemoDebug" component={DemoDebugScreen} />
     </Dashboard.Navigator>
   )
 }

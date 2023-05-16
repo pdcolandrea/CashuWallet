@@ -1,12 +1,12 @@
 /* eslint-disable react/display-name */
 import { BottomSheetModal, BottomSheetTextInput } from "@gorhom/bottom-sheet"
-import { ListItem, Text } from "app/components"
+import { Text } from "app/components"
 import { colors, spacing, typography } from "app/theme"
 import React, { forwardRef, useCallback, useContext, useMemo, useState } from "react"
-import { Keyboard, TextStyle, TouchableOpacity, View } from "react-native"
+import { Keyboard, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { Icon } from "react-native-elements"
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
-import { ReceiveButton } from "./ReceiveButton"
+import Animated, { FadeIn } from "react-native-reanimated"
+import { ReceiveButton } from "../../components/ReceiveButton"
 import { getDecodedToken } from "@cashu/cashu-ts"
 import Clipboard from "@react-native-clipboard/clipboard"
 import { CashiContext } from "app/utils/context"
@@ -20,7 +20,6 @@ export const InputTextModal = forwardRef<BottomSheetModal, ReceiveModalProps>((p
   const snapPoints = useMemo(() => ["70%"], [])
 
   const openModal = () => {
-    console.log({ ref })
     ref.current?.expand()
   }
 
@@ -47,6 +46,11 @@ export const InputTextModal = forwardRef<BottomSheetModal, ReceiveModalProps>((p
     }
   }
 
+  const onCameraPressed = () => {
+    // navigate to camera screen OR extend modal
+    console.log("todo: camera opening")
+  }
+
   return (
     <BottomSheetModal
       ref={ref}
@@ -56,10 +60,9 @@ export const InputTextModal = forwardRef<BottomSheetModal, ReceiveModalProps>((p
       // enablePanDownToClose={currentStep === 0}
     >
       <TouchableOpacity
-        style={{ flex: 1, padding: spacing.medium }}
+        style={$modalRoot}
         onPress={() => {
           Keyboard.dismiss()
-          expand()
         }}
         activeOpacity={1}
       >
@@ -89,32 +92,26 @@ export const InputTextModal = forwardRef<BottomSheetModal, ReceiveModalProps>((p
             multiline
           />
 
-          <View
-            style={{ flexDirection: "row", marginTop: spacing.small, justifyContent: "flex-end" }}
-          >
+          <View style={$buttonRow}>
             <Icon
               name="clipboard"
               type="feather"
               onPress={onPastePressed}
-              containerStyle={{ backgroundColor: colors.background, borderRadius: 120 }}
-              iconStyle={{ padding: 10 }}
+              containerStyle={$iconCon}
+              iconStyle={$innerIcon}
               color={colors.text}
             />
             <Icon
               name="camera"
               type="feather"
-              onPress={() => {}}
-              containerStyle={{
-                backgroundColor: colors.background,
-                borderRadius: 120,
-                marginLeft: spacing.small,
-              }}
-              iconStyle={{ padding: 10 }}
+              onPress={onCameraPressed}
+              containerStyle={$iconCon}
+              iconStyle={$innerIcon}
               color={colors.text}
             />
           </View>
 
-          <View style={{ flex: 1 }} />
+          <View style={$flex} />
 
           <ReceiveButton
             sat={sats}
@@ -128,6 +125,23 @@ export const InputTextModal = forwardRef<BottomSheetModal, ReceiveModalProps>((p
   )
 })
 
+const $buttonRow: ViewStyle = {
+  flexDirection: "row",
+  marginTop: spacing.small,
+  justifyContent: "flex-end",
+}
+const $modalRoot: ViewStyle = { flex: 1, padding: spacing.medium }
+const $flex: ViewStyle = {
+  flex: 1,
+}
+const $iconCon: ViewStyle = {
+  backgroundColor: colors.background,
+  borderRadius: 120,
+  marginLeft: spacing.small,
+}
+const $innerIcon: ViewStyle = {
+  padding: 10,
+}
 const $inputStyle: TextStyle = {
   fontFamily: typography.primary.normal,
   color: colors.text,
