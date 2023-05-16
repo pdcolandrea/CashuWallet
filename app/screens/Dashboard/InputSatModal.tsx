@@ -3,7 +3,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/display-name */
 import { BottomSheetModal, BottomSheetTextInput } from "@gorhom/bottom-sheet"
-import { Button, Card, ListItem, Text } from "app/components"
+import { ListItem, Text } from "app/components"
 import { colors, spacing, typography } from "app/theme"
 import React, {
   forwardRef,
@@ -14,20 +14,11 @@ import React, {
   useRef,
   useState,
 } from "react"
-import {
-  ActivityIndicator,
-  Keyboard,
-  TextInput,
-  TextStyle,
-  TouchableOpacity,
-  View,
-} from "react-native"
+import { Keyboard, TextInput, TextStyle, TouchableOpacity, View } from "react-native"
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
-import QRCode from "react-native-qrcode-svg"
 import { CashiContext } from "app/utils/context"
-import Clipboard from "@react-native-clipboard/clipboard"
 import { Icon } from "react-native-elements"
-import { ShareTextModal } from "./ShareText"
+import { ShareTextModal } from "../../components/ShareText"
 
 interface SendInvoiceProps {
   expand: () => void
@@ -80,7 +71,10 @@ interface SendModalProps {
 }
 
 export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props, ref) => {
-  const sendOptions = ["Generate Lightning Invoice", "Generate Cashu Invoice"]
+  const [sendOptions, setSendOptions] = useState([
+    "Generate Lightning Invoice",
+    "Generate Cashu Invoice",
+  ])
   const { wallet } = useContext(CashiContext)
   const [input, setInput] = useState("")
   const [currentStep, setCurrentStep] = useState(0)
@@ -94,7 +88,7 @@ export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props
 
   useEffect(() => {
     if (props.option !== "Lightning Network") {
-      sendOptions.reverse()
+      setSendOptions((opt) => opt.reverse())
     }
   }, [props.option])
 
@@ -102,7 +96,7 @@ export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props
     ref.current?.expand()
   }
 
-  const onModalChange = useCallback((index: number) => {
+  const onModalChange = useCallback((index: number, openOpposite?: boolean) => {
     props.onChange(index)
 
     if (index === -1) {

@@ -3,6 +3,7 @@ import * as storage from "../utils/v2/fast-storage"
 import React, { createContext, useEffect, useState } from "react"
 import { calculateBalance } from "app/lib/wallet-util"
 import { CInvoice, CToken } from "./cashi"
+import dayjs from "dayjs"
 
 interface WalletData {
   balance: number
@@ -34,9 +35,9 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
 
   useEffect(() => {
     // every 1min recalc balance using proof
-
+    rescanInvoices()
     setInterval(() => {
-      rescanInvoices()
+      // rescanInvoices()
     }, 60000)
   }, [])
 
@@ -64,11 +65,11 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
     try {
       // if we pass here - invoice was paid
       const { proofs, newKeys } = await wallet.requestTokens(amount, hash)
-      storage.updateLNInvoice(hash, { status: "paid" })
+      storage.updateLNInvoice(hash, "paid")
 
       for (const p of proofs) {
-        await storage.insertProof({
-          amount: amount,
+        storage.insertProof({
+          amount,
           C: p.C,
           id: p.id,
           secret: p.secret,
@@ -78,10 +79,16 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
       console.log(JSON.stringify(newKeys))
 
       const encoded = getEncodedToken({
-        token: [{ mint: MINT_URL, proofs: proofs }],
+        token: [{ mint: MINT_URL, proofs }],
       })
       console.log({ encoded })
-      await storage.insertToken({ amount, status: "paid", token: encoded })
+      storage.insertTokenHistory({
+        amount,
+        status: "paid",
+        token: encoded,
+        date: +new Date(),
+        mint: MINT_URL,
+      })
       return encoded
     } catch (err) {
       console.log("Waiting on LN invoice to be paid")
@@ -95,8 +102,18 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
     for (const invoice of invoices) {
       console.log(`[rescanInv] ${invoice.hash}`)
       // check if older than 3 days
-      // if (invoice.date)
-      await checkInvoiceHasBeenPaid(invoice.amount, invoice.hash)
+
+      const expiredDate = dayjs(invoice.date).add(1, "day")
+
+      if (dayjs(new Date()).isAfter(expiredDate)) {
+        storage.updateLNInvoice(invoice.hash, "expired")
+        continue
+      }
+
+      const token = await checkInvoiceHasBeenPaid(invoice.amount, invoice.hash)
+      if (token) {
+        rescanTokenHistory()
+      }
     }
   }
 
@@ -112,6 +129,7 @@ export const CashiProvider = ({ children }: { children: JSX.Element }) => {
     }
   }
 
+  // this would be better named as refresh token history
   const rescanTokenHistory = () => {
     const tokens = storage.getTokenHistory()
     const balance = calculateBalance(tokens)

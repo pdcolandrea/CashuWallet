@@ -1,9 +1,9 @@
 import { Proof } from "@cashu/cashu-ts"
 
-type Status = "pending" | "paid"
+type Status = "pending" | "paid" | "expired"
 
 interface CProof extends Proof {
-  status?: Status
+  status?: Omit<Status, "expired">
 }
 
 interface CToken {

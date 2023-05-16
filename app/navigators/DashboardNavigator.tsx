@@ -1,11 +1,11 @@
 import React from "react"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
-import { DemoCommunityScreen } from "app/screens"
 
 import { TransactionItemScreen } from "app/screens/Dashboard/TxItemScreen"
 import { CompositeScreenProps } from "@react-navigation/native"
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { AppStackParamList, AppStackScreenProps } from "."
+import { DashboardScreen } from "app/screens"
 
 export type DashboardScreenParamList = {
   DemoCommunityScreen: undefined
@@ -24,7 +24,7 @@ const Dashboard = createNativeStackNavigator<DashboardScreenParamList>()
 export function DashboardNavigator() {
   return (
     <Dashboard.Navigator screenOptions={{ headerShown: false }}>
-      <Dashboard.Screen name="DemoCommunityScreen" component={DemoCommunityScreen} />
+      <Dashboard.Screen name="DemoCommunityScreen" component={DashboardScreen} />
       <Dashboard.Screen name="TransactionItem" component={TransactionItemScreen} />
     </Dashboard.Navigator>
   )

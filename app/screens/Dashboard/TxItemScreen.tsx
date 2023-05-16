@@ -1,5 +1,5 @@
-import React from "react"
-import { ShareTextModal } from "./ShareText"
+import React, { useEffect } from "react"
+import { ShareTextModal } from "../../components/ShareText"
 import { useNavigation, useRoute } from "@react-navigation/native"
 
 export const TransactionItemScreen = () => {

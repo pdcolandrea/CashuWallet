@@ -18,6 +18,7 @@ export const ShareTextModal = (props: ShareTextModalProps) => {
   const onSharePressed = () => {
     console.warn("todo: share")
   }
+
   return (
     <TouchableOpacity
       style={$root}
@@ -66,6 +67,22 @@ export const ShareTextModal = (props: ShareTextModalProps) => {
           style={{ marginTop: spacing.small }}
           // content={props.data.slice(-5)}
           footer="Only share this token with users you'd like to pay"
+        />
+
+        <Card
+          heading="Transaction Details"
+          onPress={copyTokenToClipboard}
+          style={{ marginTop: spacing.small }}
+          ContentComponent={
+            <View>
+              <Text>
+                Value: <Text preset="bold">10sat</Text>
+              </Text>
+              <Text>
+                Redeemed: <Text preset="bold">True</Text>
+              </Text>
+            </View>
+          }
         />
 
         <View style={{ flex: 1 }} />
