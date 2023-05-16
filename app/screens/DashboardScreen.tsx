@@ -31,12 +31,13 @@ import Animated, {
 } from "react-native-reanimated"
 import { CIcon } from "app/components/v2/CIcon"
 import { isInvoice, timeSince } from "app/utils/format"
+import { Currency } from "app/utils/cashi"
 
 export const DashboardScreen: FC<DemoTabScreenProps<"DemoCommunity">> = function DashboardScreen(
   _props,
 ) {
   const { wallet } = useContext(CashiContext)
-  const [viewingCurr, setViewingCurr] = useState<"Lightning Network" | "Cashu Token">("Cashu Token")
+  const [viewingCurr, setViewingCurr] = useState<Currency>("Cashu Token")
   const [viewingModal, setViewingModal] = useState<"receive" | "withdraw" | "">("")
   const debugCount = useRef(0)
   const receiveModal = useRef<BottomSheetModal>(null)
@@ -106,7 +107,7 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DemoCommunity">> = function
           {wallet.balance} Sats
         </Text>
 
-        <AText onPress={switchCurrMethods} preset="subheading" style={{ textAlign: "center" }}>
+        <AText onPress={switchCurrMethods} preset="subheading" style={$centerText}>
           {viewingCurr}
         </AText>
 
@@ -169,6 +170,7 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DemoCommunity">> = function
               let payment: string
               let subtitle: string
               let rightTitle: string
+              let data: string
 
               if (item.amount < 0) {
                 payment = `Sent`
@@ -177,6 +179,7 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DemoCommunity">> = function
               }
 
               if (isInvoice(item)) {
+                data = item.pr
                 if (item.amount < 0) {
                   title = `Invoice for ${item.amount}sat`
                 } else {
@@ -196,6 +199,7 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DemoCommunity">> = function
                 title = `${payment} ${item.amount}cashu`
                 subtitle = `${timeSince(item.date)} ago`
                 rightTitle = `${item.amount}`
+                data = item.token
               }
 
               return (
@@ -204,7 +208,7 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DemoCommunity">> = function
                     _props.navigation.navigate("DemoCommunity", {
                       screen: "TransactionItem",
                       params: {
-                        data: item.token || item.pr,
+                        data,
                       },
                     })
                   }}
@@ -244,6 +248,7 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DemoCommunity">> = function
         onChange={(index) => {
           if (index === -1) setViewingModal("")
         }}
+        option={viewingCurr}
       />
     </>
   )
@@ -294,3 +299,4 @@ const $purpleCircle: ViewStyle = {
   backgroundColor: "#825aca",
 }
 const $smallText: TextStyle = { color: colors.tint, alignSelf: "flex-end", marginBottom: 10 }
+const $centerText: TextStyle = { textAlign: "center" }

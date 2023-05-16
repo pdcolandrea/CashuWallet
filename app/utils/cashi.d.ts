@@ -21,3 +21,5 @@ interface CInvoice {
   status: Status
   date: number
 }
+
+type Currency = "Lightning Network" | "Cashu Token"

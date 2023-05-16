@@ -4,7 +4,7 @@
 /* eslint-disable react/display-name */
 import { BottomSheetModal, BottomSheetTextInput } from "@gorhom/bottom-sheet"
 import { ListItem, Text } from "app/components"
-import { colors, spacing, typography } from "app/theme"
+import { spacing } from "app/theme"
 import React, {
   forwardRef,
   useCallback,
@@ -14,11 +14,12 @@ import React, {
   useRef,
   useState,
 } from "react"
-import { Keyboard, TextInput, TextStyle, TouchableOpacity, View } from "react-native"
+import { Keyboard, TouchableOpacity } from "react-native"
 import Animated, { FadeOut } from "react-native-reanimated"
 import { CashiContext } from "app/utils/context"
 
 import { ShareTextModal } from "../../components/ShareText"
+import { Currency } from "app/utils/cashi"
 
 interface SendInvoiceProps {
   expand: () => void
@@ -67,7 +68,7 @@ const SendInvoice = ({ expand, sat, goLastStep, txType }: SendInvoiceProps) => {
 
 interface SendModalProps {
   onChange?: (index: number) => void
-  option: string
+  option: Currency
 }
 
 export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props, ref) => {
@@ -78,7 +79,7 @@ export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props
   const { wallet } = useContext(CashiContext)
   const [input, setInput] = useState("")
   const [currentStep, setCurrentStep] = useState(0)
-  const inputRef = useRef<TextInput>()
+  const inputRef = useRef<typeof BottomSheetTextInput>()
   const snapPoints = useMemo(() => (currentStep === 0 ? ["35%"] : ["100%"]), [currentStep])
 
   const isCashu = props.option === "Cashu Token"
@@ -171,6 +172,7 @@ export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props
 
             {sendOptions.map((opt, index) => {
               const isSelected = opt.includes(props.option.split(" ")[0])
+
               return (
                 <ListItem
                   leftIcon="ladybug"
@@ -212,17 +214,17 @@ export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props
   )
 })
 
-const $inputStyle: TextStyle = {
-  fontFamily: typography.primary.normal,
-  color: colors.text,
-  fontSize: 16,
-  height: 130,
-  minHeight: 60,
-  backgroundColor: colors.background,
-  borderColor: colors.border,
-  borderWidth: 1,
-  borderRadius: 4,
-  // https://github.com/facebook/react-native/issues/21720#issuecomment-532642093
-  paddingVertical: 6,
-  paddingHorizontal: 6,
-}
+// const $inputStyle: TextStyle = {
+//   fontFamily: typography.primary.normal,
+//   color: colors.text,
+//   fontSize: 16,
+//   height: 130,
+//   minHeight: 60,
+//   backgroundColor: colors.background,
+//   borderColor: colors.border,
+//   borderWidth: 1,
+//   borderRadius: 4,
+//   // https://github.com/facebook/react-native/issues/21720#issuecomment-532642093
+//   paddingVertical: 6,
+//   paddingHorizontal: 6,
+// }

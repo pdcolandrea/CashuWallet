@@ -10,22 +10,17 @@ import { ReceiveButton } from "../../components/ReceiveButton"
 import { getDecodedToken } from "@cashu/cashu-ts"
 import Clipboard from "@react-native-clipboard/clipboard"
 import { CashiContext } from "app/utils/context"
+import { Currency } from "app/utils/cashi"
 
 interface ReceiveModalProps {
-  onChange: (index: number) => void
+  onChange?: (index: number) => void
+  option: Currency
 }
 
 export const InputTextModal = forwardRef<BottomSheetModal, ReceiveModalProps>((props, ref) => {
+  const { onChange, option } = props
   const [input, setInput] = useState("")
   const snapPoints = useMemo(() => ["70%"], [])
-
-  const openModal = () => {
-    ref.current?.expand()
-  }
-
-  const onModalChange = useCallback((index: number) => {
-    props.onChange(index)
-  }, [])
 
   const { deposit } = useContext(CashiContext)
   let sats: number
@@ -37,10 +32,14 @@ export const InputTextModal = forwardRef<BottomSheetModal, ReceiveModalProps>((p
     console.log(err)
   }
 
+  const onModalChange = useCallback((index: number) => {
+    onChange(index)
+  }, [])
+
   const onPastePressed = async () => {
-    const cashu = await Clipboard.getString()
-    if (cashu.startsWith("cashu")) {
-      setInput(cashu)
+    const clipboard = await Clipboard.getString()
+    if (clipboard.startsWith("cashu") || clipboard.startsWith("ln1")) {
+      setInput(clipboard)
     } else {
       console.log("not valid token")
     }
@@ -49,6 +48,14 @@ export const InputTextModal = forwardRef<BottomSheetModal, ReceiveModalProps>((p
   const onCameraPressed = () => {
     // navigate to camera screen OR extend modal
     console.log("todo: camera opening")
+  }
+
+  const onMainButtonPress = async () => {
+    if (option === "Cashu Token") {
+      await deposit.ecash(input)
+    } else {
+      console.log("todo: lightning withdraw soon")
+    }
   }
 
   return (
@@ -68,7 +75,7 @@ export const InputTextModal = forwardRef<BottomSheetModal, ReceiveModalProps>((p
       >
         <Animated.View entering={FadeIn.delay(300)} style={{ flex: 1, marginBottom: 20 }}>
           <Text preset="subheading" size="xl">
-            Input Token or Invoice
+            {option === "Cashu Token" ? "Input Cashu Token" : "Input Lightning Invoice"}
           </Text>
           <Text preset="formLabel">
             Enter in your cashu token
@@ -113,12 +120,7 @@ export const InputTextModal = forwardRef<BottomSheetModal, ReceiveModalProps>((p
 
           <View style={$flex} />
 
-          <ReceiveButton
-            sat={sats}
-            onPress={async () => {
-              await deposit.ecash(input)
-            }}
-          />
+          <ReceiveButton sat={sats} onPress={onMainButtonPress} />
         </Animated.View>
       </TouchableOpacity>
     </BottomSheetModal>
