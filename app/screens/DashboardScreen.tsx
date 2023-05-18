@@ -205,6 +205,14 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DemoCommunity">> = function
               return (
                 <Pressable
                   onPress={() => {
+                    if (item.status === "expired") {
+                      return
+                    }
+
+                    if (item.status === "paid") {
+                      return
+                    }
+
                     _props.navigation.navigate("DemoCommunity", {
                       screen: "TransactionItem",
                       params: {

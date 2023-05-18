@@ -72,10 +72,6 @@ interface SendModalProps {
 }
 
 export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props, ref) => {
-  const [sendOptions, setSendOptions] = useState([
-    "Generate Lightning Invoice",
-    "Generate Cashu Invoice",
-  ])
   const { wallet } = useContext(CashiContext)
   const [input, setInput] = useState("")
   const [currentStep, setCurrentStep] = useState(0)
@@ -87,11 +83,10 @@ export const InputSatModal = forwardRef<BottomSheetModal, SendModalProps>((props
   const isInputValid = parsedInput && parsedInput > 0
   const hasEnoughBalance = parsedInput && parsedInput <= wallet.balance
 
-  useEffect(() => {
-    if (props.option !== "Lightning Network") {
-      setSendOptions((opt) => opt.reverse())
-    }
-  }, [props.option])
+  let sendOptions = ["Generate Lightning Invoice", "Generate Cashu Invoice"]
+  if (props.option === "Cashu Token" && !sendOptions[0].includes("Cashu")) {
+    sendOptions = sendOptions.reverse()
+  }
 
   const openModal = () => {
     ref.current?.expand()
