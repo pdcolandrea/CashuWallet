@@ -6,6 +6,25 @@ Implementation of Cashu & Lightning Wallet built using cashu-ts
 
 ![demo](https://cdn.loom.com/sessions/thumbnails/8d7edfb66b3345c78479417292bca35a-with-play.gif)
 
+## Roadmap
+
+- [x] Minting tokens through Lightning
+- [x] Melting tokens through Lightning
+- [x] Sending tokens
+- [x] Receiving tokens
+- [x] History for melt/mint
+- [x] History for send/receive
+- [] Adding, removing Mints
+- [] Support multiple keysets
+- [] Support multiple mints
+- [] Backup tokens
+- [] Inter-mint swapping
+- [] Send/receive over Nostr
+- [] Reclaim pending tokens
+- [] Scan to pay
+- [ ] Scan to send
+- [ ] Merged Payment (use multiple mints to pay Invoice)
+
 ```
 app
 ├── components
