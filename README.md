@@ -14,14 +14,14 @@ Implementation of Cashu & Lightning Wallet built using cashu-ts
 - [x] Receiving tokens
 - [x] History for melt/mint
 - [x] History for send/receive
-- [] Adding, removing Mints
-- [] Support multiple keysets
-- [] Support multiple mints
-- [] Backup tokens
-- [] Inter-mint swapping
-- [] Send/receive over Nostr
-- [] Reclaim pending tokens
-- [] Scan to pay
+- [ ] Adding, removing Mints
+- [ ] Support multiple keysets
+- [ ] Support multiple mints
+- [ ] Backup tokens
+- [ ] Inter-mint swapping
+- [ ] Send/receive over Nostr
+- [ ] Reclaim pending tokens
+- [ ] Scan to pay
 - [ ] Scan to send
 - [ ] Merged Payment (use multiple mints to pay Invoice)
 
