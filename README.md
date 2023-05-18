@@ -1,12 +1,10 @@
 # CashuWallet
 
+Implementation of Cashu & Lightning Wallet built using cashu-ts
+
 **⚠️ Not stable for production use**
 
-### ./app directory
-
-Included in an Ignite boilerplate project is the `app` directory. This is a directory you would normally have to create when using vanilla React Native.
-
-The inside of the `app` directory looks similar to the following:
+![demo](https://cdn.loom.com/sessions/thumbnails/8d7edfb66b3345c78479417292bca35a-with-play.gif)
 
 ```
 app
